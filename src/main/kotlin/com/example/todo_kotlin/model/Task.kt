@@ -1,6 +1,8 @@
 package com.example.todo_kotlin.model
 
+import com.example.todo_kotlin.model.Priority.MEDIUM
 import jakarta.persistence.*
+
 
 @Entity
 @Table(name = "tasks")
@@ -15,5 +17,9 @@ data class Task(
     var description: String? = null,
 
     @Column(nullable = false)
-    var done: Boolean = false
+    var done: Boolean = false,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var priority: Priority = MEDIUM
 )

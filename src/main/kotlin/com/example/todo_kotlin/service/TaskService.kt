@@ -10,23 +10,22 @@ import org.springframework.stereotype.Service
 @Service
 class TaskService(
     private val taskRepository: TaskRepository
-){
-    fun getAllTasks(): List<TaskResponse> =
-        taskRepository.findAll().map { it.toResponse() }
+) {
+
+    fun getAllTasks(): List<TaskResponse> {
+        return taskRepository.findAll().map { toResponse(it) }
+    }
 
     fun getTaskById(id: Long): TaskResponse {
         val task = taskRepository.findById(id)
             .orElseThrow { EntityNotFoundException("Tarefa não encontrada com ID: $id") }
-        return task.toResponse()
+        return toResponse(task)
     }
 
     fun createTask(request: TaskRequest): TaskResponse {
-        val task = Task(
-            title = request.title,
-            description = request.description,
-            done = request.done
-        )
-        return taskRepository.save(task).toResponse()
+        val task = toEntity(request)
+        val saved = taskRepository.save(task)
+        return toResponse(saved)
     }
 
     fun updateTask(id: Long, request: TaskRequest): TaskResponse {
@@ -36,8 +35,10 @@ class TaskService(
         task.title = request.title
         task.description = request.description
         task.done = request.done
+        task.priority = request.priority
 
-        return taskRepository.save(task).toResponse()
+        val updated = taskRepository.save(task)
+        return toResponse(updated)
     }
 
     fun deleteTask(id: Long) {
@@ -47,11 +48,24 @@ class TaskService(
         taskRepository.deleteById(id)
     }
 
-    // Função de extensão para converter Task → TaskResponse
-    private fun Task.toResponse() = TaskResponse(
-        id = this.id,
-        title = this.title,
-        description = this.description,
-        done = this.done
-    )
+    // Conversão para Entidade
+    private fun toEntity(request: TaskRequest): Task {
+        return Task(
+            title = request.title,
+            description = request.description,
+            done = request.done,
+            priority = request.priority
+        )
+    }
+
+    // Conversão para DTO de Resposta
+    private fun toResponse(task: Task): TaskResponse {
+        return TaskResponse(
+            id = task.id,
+            title = task.title,
+            description = task.description,
+            done = task.done,
+            priority = task.priority
+        )
+    }
 }

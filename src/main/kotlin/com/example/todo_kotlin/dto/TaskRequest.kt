@@ -1,12 +1,17 @@
 package com.example.todo_kotlin.dto
 
+import com.example.todo_kotlin.model.Priority
 import jakarta.validation.constraints.NotBlank
 
 data class TaskRequest(
     @field:NotBlank(message = "O título é obrigatório.")
-    val title: String,
+    var title: String,
 
-    val description: String? = null,
+    var description: String? = null,
 
-    val done: Boolean = false
+    var priority: Priority = Priority.MEDIUM,
+
+    var done: Boolean = false
+
+
 )
